@@ -245,32 +245,22 @@ public class Pkcs11SignatureToken extends AbstractKeyStoreTokenConnection {
 		return provider;
 	}
 
-	protected String buildConfig() {
-		/*
+	 protected String buildConfig() {
+	/*
 		 * The smartCardNameIndex int is added at the end of the smartCard name in order to enable the successive
 		 * loading of multiple pkcs11 libraries
-		 */
-		String aPKCS11LibraryFileName = getPkcs11Path();
-		aPKCS11LibraryFileName = escapePath(aPKCS11LibraryFileName);
+	 */
+	String aPKCS11LibraryFileName = getPkcs11Path();
+	aPKCS11LibraryFileName = escapePath(aPKCS11LibraryFileName);
 
-		StringBuilder pkcs11Config = new StringBuilder();
-		pkcs11Config.append("name = SmartCard").append(UUID.randomUUID());
-		pkcs11Config.append(NEW_LINE).append("library = ").append(DOUBLE_QUOTE).append(aPKCS11LibraryFileName)
-				.append(DOUBLE_QUOTE);
+	try {
 
-		if (slotId >= 0) {
-			pkcs11Config.append(NEW_LINE).append("slot = ").append(slotId);
-		}
-		if (slotListIndex >= 0) {
-			pkcs11Config.append(NEW_LINE).append("slotListIndex = ").append(slotListIndex);
-		}
+	    return new String(Files.readAllBytes(new File(aPKCS11LibraryFileName).toPath()));
+	} catch (Exception e) {
+	    throw new DSSException(String.format("Loading config file '%s' failed", aPKCS11LibraryFileName), e);
 
-		if (extraPkcs11Config != null && !extraPkcs11Config.isEmpty()) {
-			pkcs11Config.append(NEW_LINE).append(extraPkcs11Config);
-		}
-
-		return pkcs11Config.toString();
 	}
+    }
 
 	protected String escapePath(String pathToEscape) {
 		if (pathToEscape != null) {
